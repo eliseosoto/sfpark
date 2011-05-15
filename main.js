@@ -3,8 +3,23 @@ function jsonp(url, callback) {
     var scriptElement = document.createElement("script");
     scriptElement.type = "text/javascript";
     // i add to the url the call back function
-    scriptElement.src = url + "&jsoncallback="+callback;
-    document.getElementsByTagName("head")[0].appendChild(scriptElement);
+    var jsonpReq = url + "&jsoncallback=" + callback;
+    scriptElement.src = jsonpReq;
+    
+    // If found then remove it
+    var head = document.getElementsByTagName("head")[0];
+    var scripts = head.getElementsByTagName("script");
+    var scriptToRemove;
+    for(i in scripts) {
+        if(scripts[i].type == "text/javascript" && scripts[i].src == jsonpReq) {
+            scriptToRemove = scripts[i];
+        }
+    }
+    if(scriptToRemove) {
+        head.removeChild(scriptToRemove);
+    }
+    console.log(scriptElement.cache);
+    head.appendChild(scriptElement);
 }
 
 //this function just set the url, and make the call
@@ -12,6 +27,8 @@ function getPark() {
     var url = "http://api.sfpark.org/sfpark/rest/availabilityservice?lat=37.792275&long=-122.397089&radius=2&uom=mile&response=json";
     var callback = 'sfParkResults';
     jsonp(url, callback);
+    
+    setTimeout("getPark()", 5000);
 }
 
 function createTableRow(element) {
@@ -28,14 +45,20 @@ function createTableRow(element) {
 }
 
 function sfParkResults(parking) {    
-    var content = document.getElementById('results');
-    var table = document.getElementById('xxx');
+    var lastUpdated = document.getElementById('lastUpdated');
+    var table = document.getElementById('parkResults');
     
-    var item = document.createElement('li');
-    item.innerHTML = parking.AVAILABILITY_UPDATED_TIMESTAMP;
-    content.appendChild(item);
+    lastUpdated.innerHTML = parking.AVAILABILITY_UPDATED_TIMESTAMP + Math.random();
     
+    // Get the table
     var tbody = table.getElementsByTagName("tbody")[0];
+    
+    // Remove all the table contents
+    if(tbody.hasChildNodes()) {
+        while(tbody.childNodes.length >= 1) {
+            tbody.removeChild(tbody.firstChild);
+        }
+    }
     
     for(i in parking.AVL) {
         var obj = parking.AVL[i];
