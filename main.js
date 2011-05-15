@@ -1,13 +1,21 @@
 //all the jsonp magic is here, we create an script element and we set the url and callback function.
 function jsonp(url, callback) {
+    var head = document.getElementsByTagName("head")[0];
+    
+    // Create wrapper function
+    var wrapScript = document.createElement("script");
+    wrapScript.type = "text/javascript";
+    callbackWrap = callback + "_" + Math.round(Math.random() * 10000);
+    wrapScript.innerHTML = callbackWrap + '=' + callback ;
+    head.appendChild(wrapScript);
+    
     var scriptElement = document.createElement("script");
     scriptElement.type = "text/javascript";
     // i add to the url the call back function
-    var jsonpReq = url + "&jsoncallback=" + callback;
+    var jsonpReq = url + "&jsoncallback=" + callbackWrap;
     scriptElement.src = jsonpReq;
     
     // If found then remove it
-    var head = document.getElementsByTagName("head")[0];
     var scripts = head.getElementsByTagName("script");
     var scriptToRemove;
     for(i in scripts) {
@@ -18,15 +26,13 @@ function jsonp(url, callback) {
     if(scriptToRemove) {
         head.removeChild(scriptToRemove);
     }
-    console.log(scriptElement.cache);
     head.appendChild(scriptElement);
 }
 
 //this function just set the url, and make the call
 function getPark() {
     var url = "http://api.sfpark.org/sfpark/rest/availabilityservice?lat=37.792275&long=-122.397089&radius=2&uom=mile&response=json";
-    var callback = 'sfParkResults';
-    jsonp(url, callback);
+    jsonp(url, 'sfParkResults');
     
     setTimeout("getPark()", 5000);
 }
