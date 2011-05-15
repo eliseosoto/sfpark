@@ -1,10 +1,10 @@
 //all the jsonp magic is here, we create an script element and we set the url and callback function.
 function jsonp(url, callback) {
-    var scriptElement = document.createElement("SCRIPT");
+    var scriptElement = document.createElement("script");
     scriptElement.type = "text/javascript";
     // i add to the url the call back function
     scriptElement.src = url + "&jsoncallback="+callback;
-    document.getElementsByTagName("HEAD")[0].appendChild(scriptElement);
+    document.getElementsByTagName("head")[0].appendChild(scriptElement);
 }
 
 //this function just set the url, and make the call
@@ -35,16 +35,20 @@ function sfParkResults(parking) {
     item.innerHTML = parking.AVAILABILITY_UPDATED_TIMESTAMP;
     content.appendChild(item);
     
-    var tbody = table.getElementsByTagName("TBODY")[0];
+    var tbody = table.getElementsByTagName("tbody")[0];
     
     for(i in parking.AVL) {
         var obj = parking.AVL[i];
-        var tableRow = createTableRow(obj.NAME, obj.OPER, obj.OCC);
+        
+        // Need to sanitize OCC since sometimes is greater than OPER (service bug?)
+        var percentage = obj.OPER == 0 ? 0.0 : ((Math.min(obj.OCC, obj.OPER) * 100) / obj.OPER).toFixed(0);
+        
+        var tableRow = createTableRow(obj.NAME, obj.OPER, obj.OCC, percentage);
         tbody.appendChild(tableRow);
     }
 }
 
 // wait for all the page elements to load (including images), not very effective but I wanted to keep it simple
-window.onload=function() {
+window.onload = function() {
     getPark();
 }
