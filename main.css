@@ -1,0 +1,13 @@
+h1 {
+    color: #FF7643;
+    font-family: Helvetica, Arial;
+}
+
+table, th, td {
+    font-family: Verdana;
+    border: 0px solid black;
+}
+
+tr:nth-child(odd) {
+    background-color: lavender;
+}
