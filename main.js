@@ -1,4 +1,4 @@
-refreshRate = 5000; // In Milliseconds
+refreshRate = 30 * 1000; // In Milliseconds
 
 /**
 Inserts <script> in the <head> to handle JSONP requests
@@ -86,8 +86,10 @@ Refreshes the UI with the data coming from the SFPark service
 function sfParkResults(parking) {    
     var lastUpdated = document.getElementById('lastUpdated');
     var table = document.getElementById('parkResults');
+    var gMapsUrl = "http://maps.google.com/?q=";
     
-    lastUpdated.innerHTML = parking.AVAILABILITY_UPDATED_TIMESTAMP;
+    var lud = new Date(parking.AVAILABILITY_UPDATED_TIMESTAMP);
+    lastUpdated.innerHTML = lud.getFullYear() + "-" + lud.getMonth() + "-" + lud.getDate() + " " + lud.getHours() + ":" + lud.getMinutes() + ":" + lud.getSeconds();
     
     // Get the table
     var tbody = table.getElementsByTagName("tbody")[0];
@@ -99,20 +101,48 @@ function sfParkResults(parking) {
         }
     }
     
+    var totOPER = 0, totOCC = 0, totAvailable = 0,numOcc;
     for(i in parking.AVL) {
         var obj = parking.AVL[i];
         
         // Need to sanitize OCC since sometimes is greater than OPER (service bug?)
-        var percentage = obj.OPER == 0 ? 0.0 : ((Math.min(obj.OCC, obj.OPER) * 100) / obj.OPER).toFixed(0);
+        numOcc = Math.min(obj.OCC, obj.OPER);
+        var percentage = obj.OPER == 0 ? 0 : Math.round((numOcc * 100) / obj.OPER);
+        var numAvailable = obj.OPER - numOcc;
         
-        var tableRow = createTableRow(obj.NAME, obj.OPER, obj.OCC, percentage);
+        // Cumulative totals
+        totOPER += parseInt(obj.OPER);
+        totOCC += parseInt(numOcc);
+        totAvailable += parseInt(numAvailable);
+        
+        // Reverse the coordinates to make them compatible with Google Maps
+        var addressToSearch = encodeURIComponent(obj.NAME + ", San Francisco, CA");
+        var nameHtml = "<a href='" + gMapsUrl + addressToSearch + "'>" + obj.NAME + "</a>";
+        
+        var tableRow = createTableRow(nameHtml, obj.OPER, numOcc, numAvailable, percentage + "\%");
+        
+        // Set styles for percentage > 75% and 100%
+        if(percentage == 100) {
+            tableRow.className += "full";
+        } else if (percentage >= 75) {
+            tableRow.className += "almost-full";
+        }
+        
         tbody.appendChild(tableRow);
     }
     
     // Footer
     var tfoot = table.getElementsByTagName("tfoot")[0];
-    tfoot.removeChild(tfoot.firstChild);
-    tfoot.appendChild(createTableRow(1,2,3,Math.random()));
+
+    // Remove the table footer
+    if(tfoot.hasChildNodes()) {
+        while(tfoot.childNodes.length >= 1) {
+            tfoot.removeChild(tfoot.firstChild);
+        }
+    }
+
+    var occupiedPercentage = Math.round((totOCC * 100) / totOPER);    
+    tfoot.appendChild(createTableRow('Total',totOPER,totOCC, totAvailable, occupiedPercentage));
 }
 
 // wait for all the page elements to load (including images), not very effective but I wanted to keep it simple

@@ -14,22 +14,26 @@
 		<!-- Navigation -->
 	</nav>
 	<section id="intro">
-		<!-- Introduction -->
+		<p>This is a demo app that makes an AJAX request to the <a href="http://sfpark.org/">SFpark</a> web service to get real-time parking information.</p>
+		<p>Click on the name to see the location on Google Maps. The table below refreshes itself every 30 seconds. If the parking zone is almost full the row will have a different background color.</p>
 	</section>
 	<section id="main">
-		<!-- Main content area -->
-		<p>Last updated: <span id="lastUpdated">Never</span></p>
 		<table id="parkResults">
 			<thead>
 				<tr>
+					<td colspan="5" id="lastUpdatedRow"><strong>Last updated:</strong> <span id="lastUpdated"><time>Never</time></span></td>
+				</tr>
+				<tr>
 					<th>Name</th>
-					<th>OPER</th>
-					<th>OCC</th>
-					<th>OCC %</th>
+					<th>Operational Spots</th>
+					<th>Occupied</th>
+					<th>Available</th>
+					<th>Percent Occupied</th>
 				</tr>
 			</thead>
 			<tfoot>
 				<tr>
+					<td>Total</td>
 					<td>-</td>
 					<td>-</td>
 					<td>-</td>
@@ -38,7 +42,7 @@
 			</tfoot>
 			<tbody>
 				<tr>
-					<td colspan="4">Loading data...</td>
+					<td colspan="5">Loading data...</td>
 				</tr>
 			</tbody>
 		</table>
@@ -47,7 +51,7 @@
 		<!-- Sidebar -->
 	</aside>
 	<footer>
-		<!-- Footer -->
+		<p>Created by <a href="http://about.me/eliseosoto">Eliseo Soto</a> - 2011</p>
 	</footer>
 </body>
 </html>
