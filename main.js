@@ -89,7 +89,8 @@ function sfParkResults(parking) {
     var gMapsUrl = "http://maps.google.com/?q=";
     
     var lud = new Date(parking.AVAILABILITY_UPDATED_TIMESTAMP);
-    lastUpdated.innerHTML = lud.getFullYear() + "-" + lud.getMonth() + "-" + lud.getDate() + " " + lud.getHours() + ":" + lud.getMinutes() + ":" + lud.getSeconds();
+    var month = lud.getMonth() + 1;
+    lastUpdated.innerHTML = lud.getFullYear() + "-" + month  + "-" + lud.getDate() + " " + lud.getHours() + ":" + lud.getMinutes() + ":" + lud.getSeconds();    
     
     // Get the table
     var tbody = table.getElementsByTagName("tbody")[0];
